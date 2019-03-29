@@ -59,7 +59,7 @@ module CheckRules
 		end
 
 		def tie?(board)
-			board.each {|row| return false if row.any? { |item| item == nil} }
+			board.each { |row| return false if row.any? { |item| item == nil }}
 			true
 		end
 

@@ -1,5 +1,6 @@
 require "bundler/setup"
 require "Tic_Tac_Toe"
+require "Game_tools/CheckRules"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
