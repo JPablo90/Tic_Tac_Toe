@@ -1,10 +1,20 @@
 module CheckRules
 	class CheckRules
-		attr_reader :winner
-		def initialize()
-			@winner = nil
+		
+		def winner?(board, player_label, size_board)
+			return true if winning_row?(board, player_label)
+			return true if winning_column?(board, player_label)
+			return true if winning_diagonal?(board, player_label, size_board)
+			false
 		end
 
+		def tie?(board)
+			board.each { |row| return false if row.any? { |item| item == nil } }
+			true
+		end
+
+		private
+		#-------------------------------------------------------------------------
 		def check_line(line, player_label)
 			 return true if line.all? {|item| item == player_label}
 			 false
@@ -49,18 +59,6 @@ module CheckRules
 				nRow += 1
 			}
 			rightDiag
-		end
-
-		def winner?(board, player_label, size_board)
-			return true if winning_row?(board, player_label)
-			return true if winning_column?(board, player_label)
-			return true if winning_diagonal?(board, player_label, size_board)
-			false
-		end
-
-		def tie?(board)
-			board.each { |row| return false if row.any? { |item| item == nil }}
-			true
 		end
 
 	end
