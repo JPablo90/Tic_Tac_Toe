@@ -1,12 +1,10 @@
 module Player
 	class Player
-		attr_accessor :winner
-		attr_accessor :label
-		attr_accessor :turn
+		attr_accessor :winner, :label, :turn
 
-		def initialize()
+		def initialize(label)
 			@winner = false
-			@label = nil
+			@label = label
 			@turn = false
 		end
 	end
