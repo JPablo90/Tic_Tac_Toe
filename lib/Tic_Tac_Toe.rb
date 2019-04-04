@@ -1,13 +1,13 @@
 require "Tic_Tac_Toe/version"
 require "Game_tools/Player"
 require "Game_tools/CheckRules"
+require "Game_tools/Board"
 require "pry"
 
 module TicTacToe
-
 	class TicTacToe
 		MIN_BOARD_SIZE = 3
-		MIN_POSITIVE_NUM = 1
+		MAX_BOARD_SIZE = 15
 
 		def initialize()
 			@board = nil
@@ -22,33 +22,35 @@ module TicTacToe
 			playing = true
 			while playing
 				ask_board_size()
-				create_board()
+				@board = Board::Board.new(@board_size)
 				display_board()
-				until @player1.winner == true or @player2.winner == true or checkrules.tie?(@board)
+				until @player1.winner == true or @player2.winner == true or checkrules.tie?(@board.board)
 					change_turns_players()
 					put_tap()
-					@player1.winner = checkrules.winner?(@board, @player1.label, @board_size)
-					@player2.winner = checkrules.winner?(@board, @player2.label, @board_size)
+					@player1.winner = checkrules.winner?(@board.board, @player1.label, @board_size)
+					@player2.winner = checkrules.winner?(@board.board, @player2.label, @board_size)
 					reload()
 				end
 				winner_is()
 				playing = play_again()
 				@who_start += 1
 			end
-			nil
 		end
 
 		private
+
 		def winner_is()
-			if @player1.winner == true
+			if @player1.winner
 				puts "The winner is the Player 1."
 				@player1.winner = false
-			elsif @player2.winner == true
+			elsif @player2.winner
 				puts "The winner is the Player 2."
 				@player2.winner = false
 			else
-				puts "Tie"
+				puts "Draw."
 			end
+			puts "____________________________________"
+			nil
 		end
 
 		def play_again()
@@ -61,17 +63,18 @@ module TicTacToe
 		end
 
 		def put_tap()
-			position = 0
-			puts "Choose a position in the board for your next movement: "
-			position = gets.chomp.to_i
-			
-			if @player1.turn ==true
-				until add_value(position, @player1.label) 
+			position = 0			
+			if @player1.turn 
+				puts "Player 1 turn, choose a empty cell in the board : "
+				position = gets.chomp.to_i
+				until @board.add_value(position, @player1.label) 
 					puts "The cell is not available or does not exist, choose a valid cell: "
 					position = gets.chop.to_i
 				end
 			else
-				until add_value(position, @player2.label)
+				puts "Player 2 turn, choose a empty cell in the board : "
+				position = gets.chomp.to_i
+				until @board.add_value(position, @player2.label)
 					puts "The cell is not available or does not exist, choose a valid cell: "
 					position = gets.chop.to_i
 				end
@@ -91,30 +94,25 @@ module TicTacToe
 			nil
 		end
 
-		def create_board()
-			@board = Array.new(@board_size) { Array.new(@board_size, nil) }
-			nil
-		end
-
 		def change_turns_players()
-			if @player1.turn == false and @player2.turn == false
+			if @player1.turn
+				@player1.turn = false
+				@player2.turn = true
+			elsif @player2.turn
+				@player1.turn = true
+				@player2.turn = false
+			else
 				if @who_start%2 == 0
 					@player1.turn  = true
 				else
 					@player2.turn = true
 				end
-			elsif @player1.turn == true
-				@player1.turn = false
-				@player2.turn = true
-			else
-				@player1.turn = true
-				@player2.turn = false
 			end 
 			nil
 		end
 
 		def display_board()
-			puts @board.map {|item| item.join("\t")}
+			puts @board.board.map {|item| item.join("\t")}
 			puts "____________________________________"
 			nil
 		end
@@ -124,48 +122,6 @@ module TicTacToe
  			 display_board()
  			 nil
  		end
-
-		def add_value(cell_number, label_player)
-			x_coordinate = 0
-			y_coordinate = 0
-			return false if cell_number < MIN_POSITIVE_NUM or cell_number > @board_size**2
-			x_coordinate = find_x_coordinate(cell_number)
-			y_coordinate = find_y_coordinate(cell_number)
-
-			if(empty_cell?(y_coordinate, x_coordinate))
-				@board[y_coordinate][x_coordinate] = label_player
-				return true
-			end
-			false	
-		end
-
-		def find_x_coordinate(cell_number)
-			x_coordinate = 0
-			mod  =  cell_number % @board_size
-			if mod == 0
-				x_coordinate = @board_size - 1
-			else
-				x_coordinate = mod -1
-			end
-			x_coordinate
-		end
-
-		def find_y_coordinate(cell_number)
-			y_coordinate = 0
-			div  =  cell_number / @board_size
-			if cell_number % @board_size == 0 
-				y_coordinate = div - 1
-			else
-				y_coordinate = div
-			end
-			y_coordinate
-		end
-
-		def empty_cell?(row, column)
-			return true if @board[row][column] == nil
-			false
-		end
-
 	end
 end
 
